@@ -1,0 +1,41 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: jobmatch-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: jobs
+    ports:
+      - "5433:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  api:
+    build:
+      context: ../backend
+    container_name: jobmatch-api
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: jobs
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+  crawler:
+    build:
+      context: ../crawler
+    container_name: jobmatch-crawler
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: jobs
+    depends_on:
+      - db
+volumes:
+  dbdata:

@@ -1,0 +1,10 @@
+- type: html
+  company: ExampleCo
+  url: https://boards.greenhouse.io/embed/job_board?for=example
+- type: html
+  company: Google
+  url: https://careers.google.com/jobs/results
+- type: html
+  company: Google
+  url: https://careersatdoordash.com/
+
