@@ -4,22 +4,28 @@ This repo is a minimal end‑to‑end slice:
 - Seed crawler fetches a few job pages → stores jobs
 - `/matches` returns top matches via simple hybrid scoring (keyword + vectors)
 
+## Prerequisites (linux)
+1. Install python and pip
+1. Install podman and podman-compose
+1. Set unqualified container registries in /etc/containers/registries.conf by adding this line
+*  unqualified-search-registries = ["docker.io"]
+
 ## Quick Start (Docker Compose)
 Requirements: Docker & Docker Compose
 ```bash
-podman compose -f infra/docker-compose.yml up --build
+podman-compose -f infra/docker-compose.yml up --build
 ```
 Services:
 - Postgres @ `localhost:5433` (user: `postgres`, pass: `postgres`)
 - API @ `http://localhost:8000/docs`
 
 ### Initialize database schema
-Docker compose runs `init.sql` enabling `pgvector` and creating tables/schemas.
+Compose runs `init.sql` enabling `pgvector` and creating tables/schemas.
 
 ### Seed crawl (optional)
 In a new terminal run:
 ```bash
-podman compose -f infra/docker-compose.yml run --rm crawler python crawler.py
+podman-compose -f infra/docker-compose.yml run --rm crawler python crawler.py
 ```
 
 ## API (FastAPI)
