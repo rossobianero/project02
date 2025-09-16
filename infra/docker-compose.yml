@@ -11,6 +11,7 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./alter_sources.sql:/docker-entrypoint-initdb.d/alter_sources.sql:ro
   api:
     build:
       context: ../backend
@@ -35,7 +36,28 @@ services:
       DB_USER: postgres
       DB_PASS: postgres
       DB_NAME: jobs
+      CRAWLER_USER_AGENT: "Mozilla/5.0 (compatible; JobMatchBot/0.1; +https://example.local)"
     depends_on:
       - db
+    volumes:
+      - ../crawler:/app
+  discovery:
+    build:
+      context: ../discovery
+    container_name: jobmatch-discovery
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: jobs
+      SEARCH_PROVIDER: bing
+      CRAWLER_USER_AGENT: "Mozilla/5.0 (compatible; JobMatchBot/0.2; +https://example.local)"
+      # For live discovery, export in your shell:
+      # SEARCH_API_KEY=... docker compose run --rm discovery python discovery.py
+    depends_on:
+      - db
+    volumes:
+      - ../crawler:/out
 volumes:
   dbdata:

@@ -1,0 +1,1 @@
+print('Discovery stub - implement ATS discovery here')\n

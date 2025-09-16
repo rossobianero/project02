@@ -1,60 +1,25 @@
-# Agentic Job Matching — Walking Skeleton (Phase 0)
-This repo is a minimal end‑to‑end slice:
-- Upload résumé → parse → store profile
-- Seed crawler fetches a few job pages → stores jobs
-- `/matches` returns top matches via simple hybrid scoring (keyword + vectors)
+# Agentic Job Matching Platform
 
-## Prerequisites (linux)
-1. Install python and pip
-1. Set unqualified container registries in /etc/containers/registries.conf by adding this line
-*  unqualified-search-registries = ["docker.io"]
+This project is a walking skeleton prototype for an agentic AI job-matching system.
 
-## Quick Start (Docker Compose)
-Requirements: Docker & Docker Compose
-```bash
-docker compose -f infra/docker-compose.yml up --build
+## Components
+- **backend/**: FastAPI service exposing profiles and matches API
+- **crawler/**: Scrapes job postings from known sources.yaml
+- **discovery/**: Agentic discovery service to find new ATS career sites
+- **infra/**: Docker Compose and DB initialization
+
+## Running
 ```
-Services:
-- Postgres @ `localhost:5433` (user: `postgres`, pass: `postgres`)
-- API @ `http://localhost:8000/docs`
-
-### Initialize database schema
-Compose runs `init.sql` enabling `pgvector` and creating tables/schemas.
-
-### Seed crawl (optional)
-In a new terminal run:
-```bash
-docker compose -f infra/docker-compose.yml run --rm crawler python crawler.py
+cd infra
+docker compose up --build
 ```
 
-## API (FastAPI)
-Open Swagger at `http://localhost:8000/docs`
-- `POST /profiles` — multipart: `file=<resume>`; returns `profile_id`
-- `GET /matches?profile_id=...&limit=20` — returns ranked jobs
-- `POST /feedback` — save/dismiss feedback
+To run crawler:
+```
+docker compose run --rm crawler python crawler.py
+```
 
-## Folder Layout
+To run discovery:
 ```
-backend/
-  app/
-    main.py
-    db.py
-    models.py
-    embeddings.py
-    matching.py
-  requirements.txt
-  Dockerfile
-crawler/
-  crawler.py
-  requirements.txt
-  Dockerfile
-  sources.yaml
-infra/
-  docker-compose.yml
-  init.sql
-README.md
+docker compose run --rm discovery python discovery.py
 ```
-## Replace Stubs Later
-- **embeddings.py**: plug your real embedding model/API.
-- **crawler.py**: add more adapters and robust parsing.
-- **matching.py**: replace heuristic weighting with LTR or reranker.
