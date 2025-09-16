@@ -6,14 +6,13 @@ This repo is a minimal end‑to‑end slice:
 
 ## Prerequisites (linux)
 1. Install python and pip
-1. Install podman and podman-compose
 1. Set unqualified container registries in /etc/containers/registries.conf by adding this line
 *  unqualified-search-registries = ["docker.io"]
 
 ## Quick Start (Docker Compose)
 Requirements: Docker & Docker Compose
 ```bash
-podman-compose -f infra/docker-compose.yml up --build
+docker compose -f infra/docker-compose.yml up --build
 ```
 Services:
 - Postgres @ `localhost:5433` (user: `postgres`, pass: `postgres`)
@@ -25,7 +24,7 @@ Compose runs `init.sql` enabling `pgvector` and creating tables/schemas.
 ### Seed crawl (optional)
 In a new terminal run:
 ```bash
-podman-compose -f infra/docker-compose.yml run --rm crawler python crawler.py
+docker compose -f infra/docker-compose.yml run --rm crawler python crawler.py
 ```
 
 ## API (FastAPI)
