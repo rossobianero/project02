@@ -61,19 +61,24 @@ async def validate_url(url: str) -> Tuple[bool, Optional[int]]:
         return (False, None)
 
 def upsert_source(cur, src: Source):
+    # Build the key exactly like the generated column
+    k = f"{src.type}|{src.board_token or ''}|{src.url or ''}"
+    payload = src.dict()
+    payload["key"] = k
     cur.execute(
         """
-        INSERT INTO sources(company, type, url, board_token, status, robots_allowed, score)
-        VALUES (%(company)s, %(type)s, %(url)s, %(board_token)s, %(status)s, %(robots_allowed)s, %(score)s)
-        ON CONFLICT (type, COALESCE(board_token,''), COALESCE(url,'')) DO UPDATE SET
+        INSERT INTO sources(company, type, url, board_token, status, robots_allowed, score, key)
+        VALUES (%(company)s, %(type)s, %(url)s, %(board_token)s, %(status)s, %(robots_allowed)s, %(score)s, %(key)s)
+        ON CONFLICT (key) DO UPDATE SET
             company = COALESCE(EXCLUDED.company, sources.company),
             status = EXCLUDED.status,
             robots_allowed = EXCLUDED.robots_allowed,
             score = EXCLUDED.score,
             updated_at = now()
         """,
-        src.dict(),
+        payload,
     )
+
 
 async def discover_once() -> int:
     found: List[Source] = []
